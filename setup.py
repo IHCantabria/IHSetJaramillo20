@@ -10,7 +10,8 @@ setup(
         'scipy',
         'xarray',
         'numba',
-        'datetime'
+        'datetime',
+        'IHSetCalibration @ git+https://github.com/defreitasL/IHSetCalibration.git'
     ],
     author='Lucas de Freitas Pereira',
     author_email='lucas.defreitas@unican.es',
