@@ -89,13 +89,17 @@ class setup_NSGAII(object):
 
     def simulation(self, par):
         
+        a = np.exp(par[0][0])
+        b = np.exp(par[1][0])
+        cacr = np.exp(par[2][0])
+        cero = np.exp(par[3][0])
 
         Ymd = jaramillo20(self.ja20_obj.E,
                           self.ja20_obj.dt,
-                          par[0],
-                          par[2],
-                          par[3],
-                          par[4],
+                          a,
+                          b,
+                          cacr,
+                          cero,
                           self.ja20_obj.Yini,
                           self.ja20_obj.vlt)
         
