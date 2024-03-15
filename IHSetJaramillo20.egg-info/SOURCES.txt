@@ -1,0 +1,10 @@
+LICENSE
+README.md
+setup.py
+IHSetJaramillo20/__init__.py
+IHSetJaramillo20/jaramillo20.py
+IHSetJaramillo20.egg-info/PKG-INFO
+IHSetJaramillo20.egg-info/SOURCES.txt
+IHSetJaramillo20.egg-info/dependency_links.txt
+IHSetJaramillo20.egg-info/requires.txt
+IHSetJaramillo20.egg-info/top_level.txt
