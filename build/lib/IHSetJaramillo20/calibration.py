@@ -112,7 +112,11 @@ class setup_NSGAII(object):
         self.sampler = spt.algorithms.NSGAII(
                     spot_setup=self, dbname="NSGA2"
         )
-        self.sampler.sample(self.generations, n_obj=3, n_pop=self.n_pop)
+        self.sampler.sample(
+                            self.ja20_obj.generations,
+                            n_obj=3,
+                            n_pop=self.ja20_obj.n_pop
+                            )
 
         results = self.sampler.getdata()
         return results
