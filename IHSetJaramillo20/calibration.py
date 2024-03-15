@@ -40,11 +40,11 @@ class cal_Jaramillo20(object):
         self.Hs = wav['Hs'].values
         self.Tp = wav['Tp'].values
         self.Dir = wav['Dir'].values
-        self.time = mkTime(wav['Year'].values, wav['Month'].values, wav['Day'].values, wav['Hour'].values)
+        self.time = mkTime(wav['Y'].values, wav['M'].values, wav['D'].values, wav['h'].values)
         self.E = self.Hs ^ 2
 
         self.Y_obs = ens['Yobs'].values
-        self.time_obs = mkTime(ens['Year'].values, ens['Month'].values, ens['Day'].values, ens['Hour'].values)
+        self.time_obs = mkTime(ens['Y'].values, ens['M'].values, ens['D'].values, ens['h'].values)
 
         if self.switch_Yini == 0:
             self.Yini = self.Y_obs[0]
