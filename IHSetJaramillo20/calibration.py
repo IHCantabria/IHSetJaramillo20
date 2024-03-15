@@ -3,6 +3,7 @@ import xarray as xr
 from datetime import datetime
 import spotpy as spt
 from spotpy.parameter import Uniform
+from .jaramillo20 import jaramillo20
 
 class cal_Jaramillo20(object):
     """
@@ -41,7 +42,7 @@ class cal_Jaramillo20(object):
         self.Tp = wav['Tp'].values
         self.Dir = wav['Dir'].values
         self.time = mkTime(wav['Y'].values, wav['M'].values, wav['D'].values, wav['h'].values)
-        self.E = self.Hs ^ 2
+        self.E = self.Hs ** 2
 
         self.Y_obs = ens['Yobs'].values
         self.time_obs = mkTime(ens['Y'].values, ens['M'].values, ens['D'].values, ens['h'].values)
