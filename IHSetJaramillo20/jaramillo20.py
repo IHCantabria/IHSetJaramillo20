@@ -5,24 +5,6 @@ from numba import jit
 import spotpy as spt
 from spotpy.parameter import Uniform
 
-@jit
-def jaramillo20(E, dt, a, b, cacr, cero, Yini, vlt):
-    """
-    Jaramillo et al. 2020 model
-    """
-    Seq = (E -b)/a
-    Y = np.zeros_like(E)
-    Y[0] = Yini
-    for i in range(1, len(E)):
-        if Y[i-1] < Seq[i]:
-            Y[i] = ((Y[i-1]-Seq[i])*np.exp(-1 * a *cacr *(E[i] ^ 0.5)*dt))+Seq[i] + vlt*dt
-        else:
-            Y[i] = ((Y[i-1]-Seq[i])*np.exp(-1 * a *cero *(E[i] ^ 0.5)*dt))+Seq[i] + vlt*dt
-
-    return Y
-
-
-
 class cal_Jaramillo20(object):
     """
     cal_Jaramillo20
@@ -136,3 +118,20 @@ class spt_setup_NSGAII(object):
 
         results = self.sampler.getdata()
         return results
+
+
+@jit
+def jaramillo20(E, dt, a, b, cacr, cero, Yini, vlt):
+    """
+    Jaramillo et al. 2020 model
+    """
+    Seq = (E -b)/a
+    Y = np.zeros_like(E)
+    Y[0] = Yini
+    for i in range(1, len(E)):
+        if Y[i-1] < Seq[i]:
+            Y[i] = ((Y[i-1]-Seq[i])*np.exp(-1 * a *cacr *(E[i] ^ 0.5)*dt))+Seq[i] + vlt*dt
+        else:
+            Y[i] = ((Y[i-1]-Seq[i])*np.exp(-1 * a *cero *(E[i] ^ 0.5)*dt))+Seq[i] + vlt*dt
+
+    return Y
