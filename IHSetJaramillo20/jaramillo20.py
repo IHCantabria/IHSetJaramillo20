@@ -23,79 +23,55 @@ def jaramillo20(E, dt, a, b, cacr, cero, Yini, vlt):
 
 
 
-# class cal_Jaramillo20(object):
-#     """
-#     cal_Jaramillo20
+class cal_Jaramillo20(object):
+    """
+    cal_Jaramillo20
     
-#     Configuration to calibrate and run the Jaramillo et al. (2020) Shoreline Evolution Model.
+    Configuration to calibrate and run the Jaramillo et al. (2020) Shoreline Evolution Model.
     
-#     This class reads input datasets, performs calibration, and writes the results to an output NetCDF file.
+    This class reads input datasets, performs calibration, and writes the results to an output NetCDF file.
     
-#     Note: The function internally uses the Yates09 function for shoreline evolution.
+    Note: The function internally uses the Yates09 function for shoreline evolution.
     
-#     """
+    """
 
-#     def __init__(self, path):
+    def __init__(self, path):
 
-#         self.path = path
+        self.path = path
         
-#         mkTime = np.vectorize(lambda Y, M, D, h: datetime(int(Y), int(M), int(D), int(h), 0, 0))
+        mkTime = np.vectorize(lambda Y, M, D, h: datetime(int(Y), int(M), int(D), int(h), 0, 0))
 
-#         cfg = xr.open_dataset(path+'config.nc')
-#         wav = xr.open_dataset(path+'wav.nc')
-#         ens = xr.open_dataset(path+'ens.nc')
+        cfg = xr.open_dataset(path+'config.nc')
+        wav = xr.open_dataset(path+'wav.nc')
+        ens = xr.open_dataset(path+'ens.nc')
 
-#         self.cal_alg = cfg['cal_alg'].values
-#         self.dt = cfg['dt'].values
-#         self.switch_Yini = cfg['switch_Yini'].values
-#         self.switch_vlt = cfg['switch_vlt'].values
+        self.cal_alg = cfg['cal_alg'].values
+        self.dt = cfg['dt'].values
+        self.switch_Yini = cfg['switch_Yini'].values
+        self.switch_vlt = cfg['switch_vlt'].values
 
-#         if self.switch_vlt == 0:
-#             vlt = cfg['vlt'].values
+        self.n_pop = cfg['n_pop'].values
+        self.generations = cfg['generations'].values
 
-#         self.Hs = wav['Hs'].values
-#         self.Tp = wav['Tp'].values
-#         self.Dir = wav['Dir'].values
-#         self.time = mkTime(wav['Year'].values, wav['Month'].values, wav['Day'].values, wav['Hour'].values)
-#         self.E = Hs ^ 2
+        if self.switch_vlt == 0:
+            vlt = cfg['vlt'].values
 
-#         self.Y_obs = ens['Yobs'].values
-#         self.time_obs = mkTime(ens['Year'].values, ens['Month'].values, ens['Day'].values, ens['Hour'].values)
+        self.Hs = wav['Hs'].values
+        self.Tp = wav['Tp'].values
+        self.Dir = wav['Dir'].values
+        self.time = mkTime(wav['Year'].values, wav['Month'].values, wav['Day'].values, wav['Hour'].values)
+        self.E = self.Hs ^ 2
 
-#         if self.switch_Yini == 0:
-#             self.Yini = self.Y_obs[0]
+        self.Y_obs = ens['Yobs'].values
+        self.time_obs = mkTime(ens['Year'].values, ens['Month'].values, ens['Day'].values, ens['Hour'].values)
 
-#         cfg.close()
-#         wav.close()
-#         ens.close()
+        if self.switch_Yini == 0:
+            self.Yini = self.Y_obs[0]
 
-#     def calibrate(self):
-#         if self.cal_alg == 'NSGAII':
-#             cfg = xr.open_dataset(self.path+'config.nc')
-#             # Number of generations
-#             generations = cfg['generations'].values
-#             # Number of individuals in the population
-#             n_pop = cfg['n_pop'].values
-#             from IHSetCalibration import multi_obj_func
-#             def obj(params):
-#                 Ymd = jaramillo20(self.E,
-#                                   self.dt,
-#                                   params[0],
-#                                   params[2],
-#                                   params[3],
-#                                   params[4],
-#                                   self.Yini,
-#                                   self.vlt)
-#                 YYsl = Ymd[self.time == self.time_obs]
-#                 return multi_obj_func(YYsl, self.Y_obs)
-            
-#             sp_setup = spt.spot_setup(obj_func=obj)
-#             sampler = spt.algorithms.NSGAII(
-#                 spot_setup=sp_setup, dbname="NSGA2"
-#             )
-#             sampler.sample(generations, n_obj=3, n_pop=n_pop)
+        cfg.close()
+        wav.close()
+        ens.close()
 
-#         results = sampler.getdata()
         
 class spt_setup_NSGAII(object):
     """
@@ -126,17 +102,17 @@ class spt_setup_NSGAII(object):
         # Number of individuals in the population
         # n_pop = cfg['n_pop'].values
 
-    def simulation(self, params):
+    def simulation(self, par):
         
 
-        Ymd = jaramillo20(self.E,
-                          self.dt,
-                          params[0],
-                          params[2],
-                          params[3],
-                          params[4],
-                          self.Yini,
-                          self.vlt)
+        Ymd = jaramillo20(self.ja20_obj.E,
+                          self.ja20_obj.dt,
+                          par[0],
+                          par[2],
+                          par[3],
+                          par[4],
+                          self.ja20_obj.Yini,
+                          self.ja20_obj.vlt)
         
         return Ymd[self.ja20_obj.idx_obs]
     
@@ -158,5 +134,5 @@ class spt_setup_NSGAII(object):
         )
         self.sampler.sample(self.generations, n_obj=3, n_pop=self.n_pop)
 
-        results = sampler.getdata()
+        results = self.sampler.getdata()
         return results
