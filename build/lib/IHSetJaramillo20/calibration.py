@@ -55,7 +55,7 @@ class cal_Jaramillo20(object):
         ens.close()
 
         
-class spt_setup_NSGAII(object):
+class setup_NSGAII(object):
     """
     spt_setup
     
@@ -83,6 +83,9 @@ class spt_setup_NSGAII(object):
         # generations = cfg['generations'].values
         # Number of individuals in the population
         # n_pop = cfg['n_pop'].values
+            
+    def parameter(self):
+        return spt.parameter.generate(self.params)
 
     def simulation(self, par):
         
@@ -105,14 +108,9 @@ class spt_setup_NSGAII(object):
         return self.obj_unc(simulation, evaluation)
     
     def setUp(self):
-        self.sp_setup = spt.spot_setup(
-                    obj_func=self.objectivefunction,
-                    simulation=self.simulation,
-                    evaluation=self.evaluation,
-                    params=self.params
-        )
+        
         self.sampler = spt.algorithms.NSGAII(
-                    spot_setup=self.sp_setup, dbname="NSGA2"
+                    spot_setup=self, dbname="NSGA2"
         )
         self.sampler.sample(self.generations, n_obj=3, n_pop=self.n_pop)
 
