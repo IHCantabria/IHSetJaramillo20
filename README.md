@@ -1,5 +1,5 @@
 
-# IHSetUtils
+# IHSetJaramillo20
 Python package to run and calibrate Jaramillo et al. (2020) equilibrium-based shoreline evolution model.
 
 ## :house: Local installation
@@ -13,12 +13,12 @@ pip install git+https://github.com/defreitasL/IHSetJaramillo20.git
 ---
 ## :zap: Main methods
 
-* jaramillo20:
+* [jaramillo20](./IHSetJaramillo20/jaramillo20.py):
 ```python
 # model's it self
 jaramillo20(E, dt, a, b, cacr, cero, Yini, vlt)
 ```
-* cal_Jaramillo20(path)
+* [cal_Jaramillo20](./IHSetJaramillo20/calibration.py):
 ```python
 # class that prepare the simulation framework
 cal_Jaramillo20(path)
