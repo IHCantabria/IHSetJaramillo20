@@ -1,46 +1,43 @@
 
 # IHSetUtils
-Python utils package for IH-SET software.
+Python package to run and calibrate Jaramillo et al. (2020) equilibrium-based shoreline evolution model.
 
 ## :house: Local installation
 * Using pip:
 ```bash
 
-pip install git+https://github.com/IHCantabria/IHSetUtils.git
+pip install git+https://github.com/defreitasL/IHSetJaramillo20.git
 
 ```
 
 ---
 ## :zap: Main methods
 
-* gow2ncEBSC:
+* jaramillo20:
 ```python
-# transform GOW data to standart wac.nc IH-SET file
-gow2ncEBSC(gowPath)
+# model's it self
+jaramillo20(E, dt, a, b, cacr, cero, Yini, vlt)
 ```
-* gos2ncEBSC
+* cal_Jaramillo20(path)
 ```python
-# transform GOS data to standart sl.nc IH-SET file
-gos2ncEBSC(gosPath)
+# class that prepare the simulation framework
+cal_Jaramillo20(path)
 ```
-* got2ncEBSC
-```python
-# transform GOT data to standart sl.nc IH-SET file
-got2ncEBSC(gotPath)
-```
+
 
 
 ## :package: Package structures
 ````
 
-SMCResultPlotHub
+IHSetJaramillo20
 |
 ├── LICENSE
 ├── README.md
 ├── build
 ├── dist
-├── IHSetUtils
-│   └── utils
+├── IHSetJaramillo20
+│   ├── calibration.py
+│   └── jaramillo20.py
 └── .gitignore
 
 ````
