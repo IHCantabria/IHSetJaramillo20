@@ -1,9 +1,9 @@
 import numpy as np
 import xarray as xr
 from datetime import datetime
-import spotpy as spt
 from spotpy.parameter import Uniform
 from .jaramillo20 import jaramillo20
+from IHSetCalibration import objective_functions
 
 class cal_Jaramillo20(object):
     """
@@ -11,15 +11,13 @@ class cal_Jaramillo20(object):
     
     Configuration to calibrate and run the Jaramillo et al. (2020) Shoreline Evolution Model.
     
-    This class reads input datasets, performs calibration, and writes the results to an output NetCDF file.
-    
-    Note: The function internally uses the Yates09 function for shoreline evolution.
-    
+    This class reads input datasets, performs its calibration.
     """
 
     def __init__(self, path):
 
         self.path = path
+        
         
         mkTime = np.vectorize(lambda Y, M, D, h: datetime(int(Y), int(M), int(D), int(h), 0, 0))
 
@@ -28,15 +26,22 @@ class cal_Jaramillo20(object):
         ens = xr.open_dataset(path+'ens.nc')
 
         self.cal_alg = cfg['cal_alg'].values
+        self.metrics = cfg['metrics'].values
         self.dt = cfg['dt'].values
         self.switch_Yini = cfg['switch_Yini'].values
         self.switch_vlt = cfg['switch_vlt'].values
 
-        self.n_pop = cfg['n_pop'].values
-        self.generations = cfg['generations'].values
+        if self.cal_alg == 'NSGAII':
+            self.n_pop = cfg['n_pop'].values
+            self.generations = cfg['generations'].values
+            self.n_obj = cfg['n_obj'].values
+            self.cal_obj = objective_functions(self.cal_alg, self.metrics, n_pop=self.n_pop, generations=self.generations, n_obj=self.n_obj)
+        else:
+            self.repetitions = cfg['repetitions'].values
+            self.cal_obj = objective_functions(self.cal_alg, self.metrics, repetitions=self.repetitions)
 
         if self.switch_vlt == 0:
-            vlt = cfg['vlt'].values
+            self.vlt = cfg['vlt'].values
 
         self.Hs = wav['Hs'].values
         self.Tp = wav['Tp'].values
@@ -47,81 +52,142 @@ class cal_Jaramillo20(object):
         self.Y_obs = ens['Obs'].values
         self.time_obs = mkTime(ens['Y'].values, ens['M'].values, ens['D'].values, ens['h'].values)
 
+        self.start_date = datetime(int(cfg['Ysi'].values), int(cfg['Msi'].values), int(cfg['Dsi'].values))
+        self.end_date = datetime(int(cfg['Ysf'].values), int(cfg['Msf'].values), int(cfg['Dsf'].values))
+
+        self.split_data()
+
         if self.switch_Yini == 0:
-            self.Yini = self.Y_obs[0]
+            self.Yini = self.Y_obs_splited[0]
 
         cfg.close()
         wav.close()
         ens.close()
+        mkIdx = np.vectorize(lambda t: np.argmin(np.abs(self.time - t)))
+        self.idx_obs = mkIdx(self.time_obs)
 
-        
-class setup_NSGAII(object):
-    """
-    spt_setup
-    
-    Configuration to calibrate and run the Jaramillo et al. (2020) Shoreline Evolution Model.
-    
-    This class reads input datasets, performs calibration, and writes the results to an output NetCDF file.
-    
-    Note: The function internally uses the Yates09 function for shoreline evolution.
-    
-    """
+        if self.switch_vlt == 0 and self.switch_Yini == 0:
+            def model_simulation(par):
+                a = -par['a']
+                b = par['b']
+                cacr = -par['cacr']
+                cero = -par['cero']
 
-    def __init__(self, multi_obj_func, ja20_obj):
-        self.obj_func = multi_obj_func
-        self.ja20_obj = ja20_obj
-        if ja20_obj.switch_vlt == 0:
+                Ymd, _ = jaramillo20(self.E_splited,
+                                    self.dt,
+                                    a,
+                                    b,
+                                    cacr,
+                                    cero,
+                                    self.Yini,
+                                    self.vlt)
+                return Ymd[self.idx_obs_splited]
+            
             self.params = [
-                Uniform('a', np.log(1e-3), np.log(5e-1)),
-                Uniform('b', np.log(1e-1), np.log(1e+2)),
-                Uniform('cacr', np.log(1e-5), np.log(1e-1)),
-                Uniform('cero', np.log(1e-5), np.log(1e-1))
+                Uniform('a', 1e-3, 2),
+                Uniform('b', 1e-1, 1e+3),
+                Uniform('cacr', 1e-5, 6e-1),
+                Uniform('cero', 1e-5, 6e-1)
             ]
-        # if self.cal_alg == 'NSGAII':
-        # cfg = xr.open_dataset(self.path+'config.nc')
-        # Number of generations
-        # generations = cfg['generations'].values
-        # Number of individuals in the population
-        # n_pop = cfg['n_pop'].values
+            self.model_sim = model_simulation
+
+        elif self.switch_vlt == 0 and self.switch_Yini == 1:
+            def model_simulation(par):
+                a = -par['a']
+                b = par['b']
+                cacr = -par['cacr']
+                cero = -par['cero']
+                Yini = par['Yini']
+
+                Ymd, _ = jaramillo20(self.E_splited,
+                                    self.dt,
+                                    a,
+                                    b,
+                                    cacr,
+                                    cero,
+                                    Yini,
+                                    self.vlt)
             
-    def parameter(self):
-        return spt.parameter.generate(self.params)
+                return Ymd[self.idx_obs_splited]
+            self.params = [
+                Uniform('a', 1e-3, 2),
+                Uniform('b', 1e-1, 1e+3),
+                Uniform('cacr', 1e-5, 6e-1),
+                Uniform('cero', 1e-5, 6e-1),
+                Uniform('Yini', np.min(self.Y_obs), np.max(self.Y_obs))
+            ]
+            self.model_sim = model_simulation
 
-    def simulation(self, par):
-        
-        a = np.exp(par[0][0])
-        b = np.exp(par[1][0])
-        cacr = np.exp(par[2][0])
-        cero = np.exp(par[3][0])
+        elif self.switch_vlt == 1 and self.switch_Yini == 0:
+            def model_simulation(par):
+                a = -par['a']
+                b = par['b']
+                cacr = -par['cacr']
+                cero = -par['cero']
+                vlt = par['vlt']
 
-        Ymd = jaramillo20(self.ja20_obj.E,
-                          self.ja20_obj.dt,
-                          a,
-                          b,
-                          cacr,
-                          cero,
-                          self.ja20_obj.Yini,
-                          self.ja20_obj.vlt)
-        
-        return Ymd[self.ja20_obj.idx_obs]
-    
-    def evaluation(self):
-        return self.ja20_obj.Y_obs
-            
-    def objectivefunction(self, simulation, evaluation):
-        return self.obj_unc(simulation, evaluation)
-    
-    def setUp(self):
-        
-        self.sampler = spt.algorithms.NSGAII(
-                    spot_setup=self, dbname="NSGA2"
-        )
-        self.sampler.sample(
-                            self.ja20_obj.generations,
-                            n_obj=3,
-                            n_pop=self.ja20_obj.n_pop
-                            )
+                Ymd, _ = jaramillo20(self.E_splited,
+                                    self.dt,
+                                    a,
+                                    b,
+                                    cacr,
+                                    cero,
+                                    self.Yini,
+                                    vlt)
+                return Ymd[self.idx_obs_splited]
+            self.params = [
+                Uniform('a', 1e-3, 2),
+                Uniform('b', 1e-1, 1e+3),
+                Uniform('cacr', 1e-5, 6e-1),
+                Uniform('cero', 1e-5, 6e-1),
+                Uniform('vlt', -1e+2, 1e+2)
+            ]
+            self.model_sim = model_simulation
 
-        results = self.sampler.getdata()
-        return results
+        elif self.switch_vlt == 1 and self.switch_Yini == 1:
+            def model_simulation(par):
+                a = -par['a']
+                b = par['b']
+                cacr = -par['cacr']
+                cero = -par['cero']
+                Yini = par['Yini']
+                vlt = par['vlt']
+
+                Ymd, _ = jaramillo20(self.E_splited,
+                                    self.dt,
+                                    a,
+                                    b,
+                                    cacr,
+                                    cero,
+                                    Yini,
+                                    vlt)
+                return Ymd[self.idx_obs_splited]
+            self.params = [
+                Uniform('a', 1e-3, 2),
+                Uniform('b', 1e-1, 1e+3),
+                Uniform('cacr', 1e-5, 6e-1),
+                Uniform('cero', 1e-5, 6e-1),
+                Uniform('Yini', np.min(self.Y_obs), np.max(self.Y_obs)),
+                Uniform('vlt', -1e+2, 1e+2)
+            ]
+            self.model_sim = model_simulation
+
+    def split_data(self):
+        """
+        Split the data into calibration and validation datasets.
+        """
+        idx = np.where((self.time >= self.start_date) & (self.time <= self.end_date))
+        self.E_splited = self.E[idx]
+        self.time_splited = self.time[idx]
+
+        idx = np.where((self.time_obs >= self.start_date) & (self.time_obs <= self.end_date))
+        self.Y_obs_splited = self.Y_obs[idx]
+        self.time_obs_splited = self.time_obs[idx]
+
+        mkIdx = np.vectorize(lambda t: np.argmin(np.abs(self.time_splited - t)))
+        self.idx_obs_splited = mkIdx(self.time_obs_splited)
+
+
+        
+
 
