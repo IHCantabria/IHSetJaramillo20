@@ -176,7 +176,7 @@ class cal_Jaramillo20(object):
         """
         Split the data into calibration and validation datasets.
         """
-        idx = np.where((self.time < self.start_date) & (self.time > self.end_date))
+        idx = np.where((self.time < self.start_date) | (self.time > self.end_date))
         self.idx_validation = idx
         mkIdx = np.vectorize(lambda t: np.argmin(np.abs(self.time[self.idx_validation] - t)))
         self.idx_validation_obs = mkIdx(self.time_obs)
