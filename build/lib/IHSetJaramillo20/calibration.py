@@ -192,10 +192,11 @@ class cal_Jaramillo20(object):
         self.idx_obs_splited = mkIdx(self.time_obs_splited)
         self.observations = self.Obs_splited
 
-        # Validation    
+        # Validation
         idx = np.where((self.time_obs < self.start_date) | (self.time_obs > self.end_date))
+        self.idx_validation_obs = idx
         mkIdx = np.vectorize(lambda t: np.argmin(np.abs(self.time[self.idx_validation] - t)))
-        self.idx_validation_obs = mkIdx(self.time_obs[idx])
+        self.idx_validation_for_obs = mkIdx(self.time_obs[idx])
 
 
         
