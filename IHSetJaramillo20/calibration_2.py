@@ -5,6 +5,7 @@ import pandas as pd
 from .jaramillo20 import jaramillo20
 import json
 
+
 class cal_Jaramillo20_2(object):
     """
     cal_Jaramillo20_2

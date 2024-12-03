@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='IHSetJaramillo20',
-    version='1.2.0',
+    version='1.2.2',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
@@ -11,12 +11,13 @@ setup(
         'numba',
         'datetime',
         'spotpy',
-        'IHSetCalibration @ git+https://github.com/defreitasL/IHSetCalibration.git'
+        'IHSetCalibration @ git+https://github.com/IHCantabria/IHSetCalibration.git',
+        'fast_optimization @ git+https://github.com/defreitasL/fast_optimization.git'
     ],
     author='Lucas de Freitas Pereira',
     author_email='lucas.defreitas@unican.es',
     description='IH-SET Jaramillo et al. (2020)',
-    url='https://github.com/defreitasL/IHSetJaramillo20',
+    url='https://github.com/IHCantabria/IHSetJaramillo20',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
