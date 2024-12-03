@@ -2,7 +2,7 @@ import numpy as np
 import xarray as xr
 import pandas as pd
 import fast_optimization as fo
-from .jaramillo20 import jaramillo20
+from .jaramillo20 import jaramillo20_njit
 import json
 
 class Jaramillo20_run(object):
@@ -40,8 +40,6 @@ class Jaramillo20_run(object):
             self.time_obs = self.time_obs[~data.mask_nan_obs[:, cfg['trs']]]
 
         if cfg['switch_Yini'] == 1:
-            self.Yini = cfg['Yini']
-        else:
             ii = np.argmin(np.abs(self.time_obs - self.time[0]))
             self.Yini = self.Obs[ii]
         
@@ -56,24 +54,45 @@ class Jaramillo20_run(object):
         mkDT = np.vectorize(lambda i: (self.time[i+1] - self.time[i]).total_seconds()/3600)
         self.dt = mkDT(np.arange(0, len(self.time)-1))
 
-        def run_model(par):
-            a = par[0]
-            b = par[1]
-            cacr = par[2]
-            cero = par[3]
-            vlt = par[4]
+        if cfg['switch_Yini'] == 0:
+            def run_model(par):
+                a = par[0]
+                b = par[1]
+                cacr = par[2]
+                cero = par[3]
+                vlt = par[4]
+                Yini = par[5]
 
-            Ymd, _ = jaramillo20(self.E,
-                                self.dt,
-                                a,
-                                b,
-                                cacr,
-                                cero,
-                                self.Yini,
-                                vlt)
-            return Ymd
+                Ymd, _ = jaramillo20_njit(self.E,
+                                    self.dt,
+                                    a,
+                                    b,
+                                    cacr,
+                                    cero,
+                                    Yini,
+                                    vlt)
+                return Ymd
         
-        self.run_model = run_model
+            self.run_model = run_model
+        else:
+            def run_model(par):
+                a = par[0]
+                b = par[1]
+                cacr = par[2]
+                cero = par[3]
+                vlt = par[4]
+
+                Ymd, _ = jaramillo20_njit(self.E,
+                                    self.dt,
+                                    a,
+                                    b,
+                                    cacr,
+                                    cero,
+                                    self.Yini,
+                                    vlt)
+                return Ymd
+        
+            self.run_model = run_model
     
     def run(self, par):
         self.full_run = self.run_model(par)
