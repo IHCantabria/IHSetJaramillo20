@@ -57,10 +57,10 @@ class Jaramillo20_run(object):
         self.dt = mkDT(np.arange(0, len(self.time)-1))
 
         def run_model(par):
-            a = -np.exp(par[0])
-            b = np.exp(par[1])
-            cacr = -np.exp(par[2])
-            cero = -np.exp(par[3])
+            a = par[0]
+            b = par[1]
+            cacr = par[2]
+            cero = par[3]
             vlt = par[4]
 
             Ymd, _ = jaramillo20(self.E,
