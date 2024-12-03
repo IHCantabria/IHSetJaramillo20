@@ -82,7 +82,7 @@ class Jaramillo20_run(object):
     def calculate_metrics(self):
         self.metrics_names = fo.backtot()[0]
         self.indexes = fo.multi_obj_indexes(self.metrics_names)
-        self.metrics = fo.multi_obj_func(self.Obs, self.full_run, self.indexes)
+        self.metrics = fo.multi_obj_func(self.Obs, self.full_run[self.idx_obs], self.indexes)
 
 
 
