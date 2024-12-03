@@ -20,10 +20,7 @@ class Jaramillo20_run(object):
      
         data = xr.open_dataset(path)
         
-        cfg = json.loads(data.attrs['Jaramillo20'])
-
-        self.vlt = cfg['vlt']
-
+        cfg = json.loads(data.attrs['run_Jaramillo20'])
 
         if cfg['trs'] == 'Average':
             self.hs = np.mean(data.hs.values, axis=1)
