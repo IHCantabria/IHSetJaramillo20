@@ -22,6 +22,8 @@ class Jaramillo20_run(object):
         
         cfg = json.loads(data.attrs['run_Jaramillo20'])
 
+        self.switch_Yini = cfg['switch_Yini']
+
         if cfg['trs'] == 'Average':
             self.hs = np.mean(data.hs.values, axis=1)
             self.time = pd.to_datetime(data.time.values)
@@ -39,16 +41,16 @@ class Jaramillo20_run(object):
             self.time_obs = pd.to_datetime(data.time_obs.values)
             self.time_obs = self.time_obs[~data.mask_nan_obs[:, cfg['trs']]]
 
-        if cfg['switch_Yini'] == 1:
-            ii = np.argmin(np.abs(self.time_obs - self.time[0]))
-            self.Yini = self.Obs[ii]
-
         self.start_date = pd.to_datetime(cfg['start_date'])
         self.end_date = pd.to_datetime(cfg['end_date'])
 
         data.close()
 
         self.split_data()
+
+        if self.switch_Yini == 1:
+            ii = np.argmin(np.abs(self.time_obs - self.time[0]))
+            self.Yini = self.Obs[ii]
         
         mkIdx = np.vectorize(lambda t: np.argmin(np.abs(self.time - t)))
         
@@ -114,6 +116,12 @@ class Jaramillo20_run(object):
         ii = np.where((self.time >= self.start_date) & (self.time <= self.end_date))[0]
         self.E = self.E[ii]
         self.time = self.time[ii]
+
+        ii = np.where((self.time_obs >= self.start_date) & (self.time_obs <= self.end_date))[0]
+        self.Obs = self.Obs[ii]
+        self.time_obs = self.time_obs[ii]
+
+
 
 
 
