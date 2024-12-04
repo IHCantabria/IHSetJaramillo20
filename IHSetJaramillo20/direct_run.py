@@ -111,7 +111,7 @@ class Jaramillo20_run(object):
         """
         Split the data into calibration and validation datasets.
         """
-        ii = np.where((self.time >= self.start_date) | (self.time <= self.end_date))[0]
+        ii = np.where((self.time >= self.start_date) & (self.time <= self.end_date))[0]
         self.E = self.E[ii]
         self.time = self.time[ii]
 
