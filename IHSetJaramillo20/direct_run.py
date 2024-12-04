@@ -60,7 +60,7 @@ class Jaramillo20_run(object):
         mkDT = np.vectorize(lambda i: (self.time[i+1] - self.time[i]).total_seconds()/3600)
         self.dt = mkDT(np.arange(0, len(self.time)-1))
 
-        if cfg['switch_Yini'] == 0:
+        if self.switch_Yini == 0:
             def run_model(par):
                 a = par[0]
                 b = par[1]
