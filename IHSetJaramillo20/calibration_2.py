@@ -32,49 +32,7 @@ class cal_Jaramillo20_2(object):
         self.lb = cfg['lb']
         self.ub = cfg['ub']
 
-        if self.cal_alg == 'NSGAII': 
-            self.num_generations = cfg['num_generations']
-            self.population_size = cfg['population_size']
-            self.cross_prob = cfg['cross_prob']
-            self.mutation_rate = cfg['mutation_rate']
-            self.pressure = cfg['pressure']
-            self.regeneration_rate = cfg['regeneration_rate']
-            self.kstop = cfg['kstop']
-            self.pcento = cfg['pcento']
-            self.peps = cfg['peps']
-            self.indexes = fo.multi_obj_indexes(self.metrics)
-        elif self.cal_alg == 'SPEA2':
-            self.num_generations = cfg['num_generations']
-            self.population_size = cfg['population_size']
-            self.pressure = cfg['pressure']
-            self.regeneration_rate = cfg['regeneration_rate']
-            self.cross_prob = cfg['cross_prob']
-            self.mutation_rate = cfg['mutation_rate']
-            self.m = cfg['m']
-            self.eta_mut = cfg['eta_mut']
-            self.kstop = cfg['kstop']
-            self.pcento = cfg['pcento']
-            self.peps = cfg['peps']
-            self.indexes = fo.multi_obj_indexes(self.metrics)
-        elif self.cal_alg == 'SCE-UA':
-            self.num_generations = cfg['num_generations']
-            self.population_size = cfg['population_size']
-            # self.magnitude = cfg['magnitude']
-            self.cross_prob = cfg['cross_prob']
-            self.mutation_rate = cfg['mutation_rate']
-            self.regeneration_rate = cfg['regeneration_rate']
-            self.eta_mut = cfg['eta_mut']
-            self.num_complexes = cfg['num_complexes']
-            self.kstop = cfg['kstop']
-            self.pcento = cfg['pcento']
-            self.peps = cfg['peps']
-            self.indexes = fo.multi_obj_indexes(self.metrics)
-        elif self.cal_alg == 'Simulated Annealing':
-            self.max_iterations = cfg['max_iterations']
-            self.initial_temperature = cfg['initial_temperature']
-            self.cooling_rate = cfg['cooling_rate']
-            self.indexes = fo.multi_obj_indexes(self.metrics)
-            
+        self.calibr_cfg = fo.config_cal(cfg)
 
         if cfg['trs'] == 'Average':
             self.hs = np.mean(data.hs.values, axis=1)
@@ -105,7 +63,6 @@ class cal_Jaramillo20_2(object):
 
 
         mkIdx = np.vectorize(lambda t: np.argmin(np.abs(self.time - t)))
-
         
         self.idx_obs = mkIdx(self.time_obs)
 
@@ -359,62 +316,5 @@ class cal_Jaramillo20_2(object):
         """
         Calibrate the model.
         """
-        if self.cal_alg == 'NSGAII':
-            self.solution, self.objectives, self.hist = fo.nsgaii_algorithm_ts(
-                self.model_sim, 
-                self.Obs_splited, 
-                self.init_par, 
-                self.num_generations, 
-                self.population_size,
-                self.cross_prob, 
-                self.mutation_rate, 
-                self.pressure, 
-                self.regeneration_rate,
-                self.kstop,
-                self.pcento,
-                self.peps,
-                self.indexes
-                )
-        elif self.cal_alg == 'SPEA2':
-            self.solution, self.objectives, self.hist = fo.spea2_algorithm(
-                self.model_sim, 
-                self.Obs_splited, 
-                self.init_par, 
-                self.num_generations, 
-                self.population_size, 
-                self.cross_prob, 
-                self.mutation_rate, 
-                self.pressure, 
-                self.regeneration_rate,
-                self.m,
-                self.eta_mut,
-                self.kstop,
-                self.pcento,
-                self.peps,
-                self.indexes)
-        elif self.cal_alg == 'SCE-UA':
-            self.solution, self.objectives, self.hist = fo.sce_ua_algorithm(
-                self.model_sim, 
-                self.Obs_splited, 
-                self.init_par, 
-                self.num_generations, 
-                self.population_size,
-                self.cross_prob,
-                self.mutation_rate,
-                self.regeneration_rate,
-                self.eta_mut,
-                self.num_complexes,
-                self.kstop,
-                self.pcento,
-                self.peps,
-                self.indexes)
-        elif self.cal_alg == 'Simulated Annealing':
-            self.solution, self.objectives, self.hist = fo.simulated_annealing(
-                self.model_sim, 
-                self.Obs_splited, 
-                self.init_par, 
-                self.max_iterations, 
-                self.initial_temperature, 
-                self.cooling_rate,
-                self.indexes)
+        self.solution, self.objectives, self.hist = self.calibr_cfg.calibrate(self)
             
