@@ -319,6 +319,8 @@ class cal_Jaramillo20_2(object):
         """
         self.solution, self.objectives, self.hist = self.calibr_cfg.calibrate(self)
 
+        self.full_run = self.run_model(self.solution)
+
         if self.switch_Yini == 0 and self.switch_vlt == 0:
             self.par_names = [r'$a$', r'$b$', r'$C^+$', r'$C^-$', r'$v_{lt}$']
             self.par_values = np.array([self.solution[0], self.solution[1], self.solution[2], self.solution[3], self.vlt])
