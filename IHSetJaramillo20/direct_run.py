@@ -18,6 +18,8 @@ class Jaramillo20_run(object):
 
         self.path = path
         self.name = 'Jaramillo et al. (2020)'
+        self.mode = 'standalone'
+        self.type = 'CS'
      
         data = xr.open_dataset(path)
         

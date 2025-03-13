@@ -19,6 +19,8 @@ class cal_Jaramillo20_2(object):
 
         self.path = path
         self.name = 'Jaramillo et al. (2020)'
+        self.mode = 'calibration'
+        self.type = 'CS'
      
         data = xr.open_dataset(path)
         
