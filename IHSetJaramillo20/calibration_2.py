@@ -26,6 +26,8 @@ class cal_Jaramillo20_2(object):
         
         cfg = json.loads(data.attrs['Jaramillo20'])
 
+        self.cfg = cfg
+
         self.cal_alg = cfg['cal_alg']
         self.metrics = cfg['metrics']
         self.switch_Yini = cfg['switch_Yini']

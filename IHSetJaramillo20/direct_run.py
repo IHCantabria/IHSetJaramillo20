@@ -27,6 +27,8 @@ class Jaramillo20_run(object):
 
         self.switch_Yini = cfg['switch_Yini']
 
+        self.cfg = cfg
+
         if cfg['trs'] == 'Average':
             self.hs = np.mean(data.hs.values, axis=1)
             self.time = pd.to_datetime(data.time.values)
