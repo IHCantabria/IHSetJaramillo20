@@ -326,25 +326,25 @@ class cal_Jaramillo20_2(object):
         self.full_run = self.run_model(self.solution)
 
         if self.switch_Yini == 0 and self.switch_vlt == 0:
-            self.par_names = [r'$a$', r'$b$', r'$C^+$', r'$C^-$', r'$v_{lt}$']
+            self.par_names = [r'a', r'b', r'C+', r'C-', r'v_{lt}']
             self.par_values = np.array([self.solution[0], self.solution[1], self.solution[2], self.solution[3], self.vlt])
             self.par_values[0] = -np.exp(self.par_values[0])
             self.par_values[2] = -np.exp(self.par_values[2])
             self.par_values[3] = -np.exp(self.par_values[3])
         elif self.switch_Yini == 1 and self.switch_vlt == 0:
-            self.par_names = [r'$a$', r'$b$', r'$C^+$', r'$C^-$', r'$v_{lt}$', r'$Y_{ini}$']
+            self.par_names = [r'a', r'b', r'C+', r'C-', r'v_{lt}', r'Y_{ini}']
             self.par_values = np.array([self.solution[0], self.solution[1], self.solution[2], self.solution[3], self.vlt, self.solution[4]])
             self.par_values[0] = -np.exp(self.par_values[0])
             self.par_values[2] = -np.exp(self.par_values[2])
             self.par_values[3] = -np.exp(self.par_values[3])
         elif self.switch_Yini == 0 and self.switch_vlt == 1:
-            self.par_names = [r'$a$', r'$b$', r'$C^+$', r'$C^-$', r'$v_{lt}$']
+            self.par_names = [r'a', r'b', r'C+', r'C-', r'v_{lt}']
             self.par_values = self.solution.copy()
             self.par_values[0] = -np.exp(self.par_values[0])
             self.par_values[2] = -np.exp(self.par_values[2])
             self.par_values[3] = -np.exp(self.par_values[3])
         elif self.switch_Yini == 1 and self.switch_vlt == 1:
-            self.par_names = [r'$a$', r'$b$', r'$C^+$', r'$C^-$', r'$v_{lt}$', r'$Y_{ini}$']
+            self.par_names = [r'a', r'b', r'C+', r'C-', r'v_{lt}', r'Y_{ini}']
             self.par_values = self.solution.copy()
             self.par_values[0] = -np.exp(self.par_values[0])
             self.par_values[2] = -np.exp(self.par_values[2])
