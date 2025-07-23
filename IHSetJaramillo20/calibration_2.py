@@ -55,123 +55,58 @@ class cal_Jaramillo20_2(CoastlineModel):
 
 
     def model_sim(self, par: np.ndarray) -> np.ndarray:
+        a = -np.exp(par[0])
+        b = par[1]
+        cacr = -np.exp(par[2])
+        cero = -np.exp(par[3])
         
         if self.switch_Yini == 0 and self.switch_vlt == 0:
-            a = -np.exp(par[0])
-            b = par[1]
-            cacr = -np.exp(par[2])
-            cero = -np.exp(par[3])
-            Ymd, _ = jaramillo20(self.E_s,
-                                 self.dt_s,
-                                 a,
-                                 b,
-                                 cacr,
-                                 cero,
-                                 self.Yini,
-                                 self.vlt)
+            vlt = self.vlt
+            Yini = self.Yini
         elif self.switch_Yini == 1 and self.switch_vlt == 0:
-            a = -np.exp(par[0])
-            b = par[1]
-            cacr = -np.exp(par[2])
-            cero = -np.exp(par[3])
+            vlt = self.vlt
             Yini = par[4]
-            Ymd, _ = jaramillo20(self.E_s,
-                                 self.dt_s,
-                                 a,
-                                 b,
-                                 cacr,
-                                 cero,
-                                 Yini,
-                                 self.vlt)
         elif self.switch_Yini == 0 and self.switch_vlt == 1:
-            a = -np.exp(par[0])
-            b = par[1]
-            cacr = -np.exp(par[2])
-            cero = -np.exp(par[3])
             vlt = par[4]
-            Ymd, _ = jaramillo20(self.E_s,
-                                 self.dt_s,
-                                 a,
-                                 b,
-                                 cacr,
-                                 cero,
-                                 self.Yini,
-                                 vlt)
+            Yini = self.Yini
         elif self.switch_Yini == 1 and self.switch_vlt == 1:
-            a = -np.exp(par[0])
-            b = par[1]
-            cacr = -np.exp(par[2])
-            cero = -np.exp(par[3])
             vlt = par[4]
             Yini = par[5]
-            Ymd, _ = jaramillo20(self.E_s,
-                                 self.dt_s,
-                                 a,
-                                 b,
-                                 cacr,
-                                 cero,
-                                 Yini,
-                                 vlt)
+        Ymd, _ = jaramillo20(self.E_s,
+                                self.dt_s,
+                                a,
+                                b,
+                                cacr,
+                                cero,
+                                Yini,
+                                vlt)
         return Ymd[self.idx_obs_splited]
     
     def run_model(self, par: np.ndarray) -> np.ndarray:
-            
+        a = par[0]
+        b = par[1]
+        cacr = par[2]
+        cero = par[3]
         if self.switch_Yini == 0 and self.switch_vlt == 0:
-            a = par[0]
-            b = par[1]
-            cacr = par[2]
-            cero = par[3]
-            Ymd, _ = jaramillo20(self.E,
-                                self.dt,
-                                a,
-                                b,
-                                cacr,
-                                cero,
-                                self.Yini,
-                                self.vlt)
+            vlt = self.vlt
+            Yini = self.Yini
         elif self.switch_Yini == 1 and self.switch_vlt == 0:
-            a = par[0]
-            b = par[1]
-            cacr = par[2]
-            cero = par[3]
+            vlt = self.vlt
             Yini = par[4]
-            Ymd, _ = jaramillo20(self.E,
-                                self.dt,
-                                a,
-                                b,
-                                cacr,
-                                cero,
-                                Yini,
-                                self.vlt)
         elif self.switch_Yini == 0 and self.switch_vlt == 1:
-            a = par[0]
-            b = par[1]
-            cacr = par[2]
-            cero = par[3]
             vlt = par[4]
-            Ymd, _ = jaramillo20(self.E,
-                                self.dt,
-                                a,
-                                b,
-                                cacr,
-                                cero,
-                                self.Yini,
-                                vlt)
+            Yini = self.Yini
         elif self.switch_Yini == 1 and self.switch_vlt == 1:
-            a = par[0]
-            b = par[1]
-            cacr = par[2]
-            cero = par[3]
             vlt = par[4]
             Yini = par[5]
-            Ymd, _ = jaramillo20(self.E,
-                                self.dt,
-                                a,
-                                b,
-                                cacr,
-                                cero,
-                                Yini,
-                                vlt)
+        Ymd, _ = jaramillo20(self.E,
+                            self.dt,
+                            a,
+                            b,
+                            cacr,
+                            cero,
+                            Yini,
+                            vlt)
         return Ymd
 
     def _set_parameter_names(self):

@@ -133,7 +133,7 @@
 #         self.time_obs = self.time_obs[ii]
 
 import numpy as np
-from .jaramillo20 import jaramillo20
+from .jaramillo20 import jaramillo20_njit
 from IHSetUtils.CoastlineModel import CoastlineModel
 
 
@@ -167,37 +167,25 @@ class Jaramillo20_run(CoastlineModel):
             self.Yini = self.Obs[0]
     
     def run_model(self, par: np.ndarray) -> np.ndarray:
-            
+        a = par[0]
+        b = par[1]
+        cacr = par[2]
+        cero = par[3]
+
         if self.switch_Yini == 1:
-            a = par[0]
-            b = par[1]
-            cacr = par[2]
-            cero = par[3]
             vlt = par[4]
-            Ymd, _ = jaramillo20(self.E,
-                                self.dt,
-                                a,
-                                b,
-                                cacr,
-                                cero,
-                                self.Yini,
-                                vlt)
+            Yini = self.Yini
         elif self.switch_Yini == 0:
-            a = par[0]
-            b = par[1]
-            cacr = par[2]
-            cero = par[3]
             vlt = par[4]
             Yini = par[5]
-            Ymd, _ = jaramillo20(self.E,
-                                self.dt,
-                                a,
-                                b,
-                                cacr,
-                                cero,
-                                Yini,
-                                vlt)
-
+        Ymd, _ = jaramillo20_njit(self.E,
+                            self.dt,
+                            a,
+                            b,
+                            cacr,
+                            cero,
+                            Yini,
+                            vlt)
         return Ymd
 
     def _set_parameter_names(self):

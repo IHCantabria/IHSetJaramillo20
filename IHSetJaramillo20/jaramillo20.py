@@ -21,7 +21,7 @@ def jaramillo20_old(E, dt, a, b, cacr, cero, Yini, vlt):
 
 
 
-@njit(nopython=True, fastmath=True, cache=True)
+@njit(fastmath=True, cache=True)
 def jaramillo20(E, dt, a, b, cacr, cero, Yini, vlt):
     n = E.shape[0]
     # Precomputados
