@@ -176,9 +176,9 @@ class cal_Jaramillo20_2(CoastlineModel):
 
     def _set_parameter_names(self):
         if self.switch_Yini == 0 and self.switch_vlt == 0:
-            self.par_names = [r'a', r'b', r'C+', r'C-', r'v_lt']
+            self.par_names = [r'a', r'b', r'C+', r'C-']
         elif self.switch_Yini == 1 and self.switch_vlt == 0:
-            self.par_names = [r'a', r'b', r'C+', r'C-', r'v_lt', r'Y_i']
+            self.par_names = [r'a', r'b', r'C+', r'C-', r'Y_i']
         elif self.switch_Yini == 0 and self.switch_vlt == 1:
             self.par_names = [r'a', r'b', r'C+', r'C-', r'v_lt']
         elif self.switch_Yini == 1 and self.switch_vlt == 1:
