@@ -2,13 +2,14 @@ from setuptools import setup, find_packages
 
 setup(
     name='IHSetJaramillo20',
-    version='1.4.5',
+    version='1.4.6',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
         'numpy',
         'xarray',
         'numba',
+        'IHSetUtils @ git+https://github.com/IHCantabria/IHSetUtils.git',
         'fast_optimization @ git+https://github.com/defreitasL/fast_optimization.git'
     ],
     author='Lucas de Freitas Pereira',
